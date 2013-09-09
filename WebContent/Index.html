@@ -1,0 +1,121 @@
+<!DOCTYPE HTML>
+<html manifest="sch.appcache">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>My Bookshelf</title>
+	<script src="jquery.min.js"></script>
+	<script src="jstorage.min.js"></script>
+</head
+>
+<body oncontextmenu="return false">
+<div id="greeting">
+	<header>Welcome! This is a simple Scholastic bookshelf</header>
+</div>
+<div>
+	<button type="button" onclick="sample1()"><img alt="Sample 1" src="sample_1_tb.jpg"/> </button>
+	<button type="button" onclick="sample2()"> <img alt="Sample 2" src="sample_2_tb.jpg"/> </button>
+	<aside id="metadata"> </aside>
+</div>
+
+<div id="menu">
+	<button type="button" onclick="gohome()">Home</button>
+	<button type="button" onclick="gettoc()">Table of Content</button>
+	<button type="button" onclick="move('f')">Forward</button>
+	<button type="button" onclick="moveback('b')">Back</button>
+</div>
+
+
+
+<script>
+httphead="http://54.235.251.152:8080/ereader/restApp/";
+//httphead="http://localhost:8080/ereader/restApp/";
+
+function sample1()
+{
+bookId="urn_isbn_9780545368759";
+firstpage = 2;
+lastpage=32;
+loadmeta(bookId);
+//alert (bookId);
+loadcover  (bookId);
+}
+
+function sample2()
+{
+bookId="urn_isbn_9780545367771";
+firstpage = 4;
+lastpage=32;
+//alert (bookId);
+loadmeta(bookId);
+loadcover(bookId);
+}
+
+function loadmeta (id)
+{
+	var apiName="GetContentMetaData?";
+	var requestUrl=httphead+apiName+"bookid="+id+"&sessionToken=xxhdhnv"+"&type=meta";
+	$.getJSON(requestUrl, function(json) {
+		  var obj = $.parseJSON(json.metadata);
+		  asideText = "About <b><u>" + obj.title + "</u></b><br/>" +
+		              "Author: " + obj.author + "<br/>"+
+		              "Publisher: " + obj.publisher + "<br/>"+
+		              "ISBN: " + obj.bookid ; 
+     $("#metadata").html(asideText);  });
+}
+
+function loadcover (id) {
+
+	$.jStorage.set("p", firstpage);
+	var apiName="GetContentInit?";
+	var requestUrl=httphead+apiName+"bookid="+id+"&sessionToken=xxhdhnv";
+	//alert(requestUrl);
+	$.getJSON(requestUrl, function(json) {
+	   $("#book").contents().find('html').html(json.cover).attr ("oncontextmenu", "return false");});
+}
+
+
+function gohome() {
+	$.jStorage.set("p", firstpage);
+	loadcover (bookId);
+ }
+
+function gettoc() {
+var apiName="GetContentInit?";
+var requestUrl=httphead+apiName+"bookid="+bookId+"&sessionToken=xxhdhnv";
+	$.getJSON(requestUrl, function(json) {
+		   $("#book").contents().find('html').html(json.toc).attr ("oncontextmenu", "return false"); });
+}
+
+function move(dir) {
+	//alert ("move =" + dir);
+	var p_no = $.jStorage.get("p");
+
+	if (dir == 'f') {
+		if (p_no < lastpage)
+			p_no++;
+
+	}
+	else {
+		p_no = $.jStorage.get("p");
+		if (p_no > firstpage)
+			p_no--;
+	}
+	
+	var pageNo = "p" + p_no;	
+	$.jStorage.set ("p", p_no);
+		
+	var apiName="GetContentFragments?";
+	var requestUrl = httphead+apiName + "bookid=" + bookId + "&sessionToken=xxxx&refIds=" + pageNo;
+	// alert (requestUrl);
+	$.getJSON(requestUrl, function(json) {
+		   $("#book").contents().find('html').html(json.frag).attr ("oncontextmenu", "return false"); });
+}
+
+
+</script>
+<div id='bookarea'>
+<iframe id='book' width="1100" height="1000"></iframe>
+</div>
+
+</body>
+</html>

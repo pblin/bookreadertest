@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script src="jquery.min.js"></script>
+<script src="jstorage.min.js"></script>
+<script src="jquery.fullscreen.js"></script>
+<script src="jquery.cookie.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/dojo/1.8.1/dojo/dojo.js"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Dictionary Lookup Demo</title>
+</head>
+<body>
+<div id = "top">
+Word: <input type="text" id="word"> <br>
+Dict Version (YD, OD): 
+<select id="ver"> 
+<option value="OD"> Older </option>
+<option value="YD"> Young </option>
+</select><br>
+<button class="action" type="button" onclick="lookup()">Go</button>
+</div>
+
+<iframe id="def" width='500' height='600' frameborder=0 ></iframe> 
+
+
+
+<script>
+//dichostname="localhost";
+dichostname="54.235.251.152";
+
+function lookup()
+{
+currentURL=window.location.href;
+header = currentURL.substring(0, currentURL.indexOf("bookreadertest"));
+httphead=header+ "ereader/restApp/";
+jsonpcallback="&jsonp=?";
+
+var requestUrl = httphead+'GetWordDef?'+ "v=" + $("#ver").val() + "&w=" + $("#word").val();
+
+var jqxhr = $.getJSON (requestUrl+jsonpcallback, function(json) {
+	dicturl="http://"+dichostname+"/dictionary"+json.wordurl;
+	$("#def").attr("src", dicturl);
+
+});
+}
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# 2012-02-21 v1.0.0
+/theme.css
+/logo.gif
+/jquery.min.js
+/jstorate.min.js
+/main.js
+
+NETWORK:
+login.asp
+
+FALLBACK:
+/html/ /offline.html

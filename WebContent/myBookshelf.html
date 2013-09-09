@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<html manifest="sch.appcache">
+<head>
+<title>My Bookshelf </title>
+<script src="jquery.min.js"></script>
+<script src="jstorage.min.js"></script>
+</head>
+
+<body oncontextmenu="return false">
+<script>
+
+$.getJSON("http://localhost:8080/ereader/restApp/GetContentFragmetns?bookid=urn_isbn_9780545368759&sessionToke=xxxx", function(json) {
+	$("body").load(json.cover);
+ });
+
+</script>
+
+
+</body>
+
+</html>
